@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ATM Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(to right, #00c6ff, #0072ff);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .dashboard {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        .dashboard h2 {
+            color: #0072ff;
+            font-weight: bold;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        .form-label {
+            font-weight: 500;
+        }
+        .message {
+            margin-top: 15px;
+            font-weight: 500;
+        }
+        .btn-custom {
+            background-color: #0072ff;
+            color: white;
+        }
+        .btn-custom:hover {
+            background-color: #004fbd;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <h2>Welcome {{ name }}!</h2>
+        <form method="POST" action="/dashboard">
+            <div class="mb-3">
+                <label for="action" class="form-label">Select Action</label>
+                <select class="form-select" id="action" name="action" required>
+                    <option value="" disabled selected>Choose an option</option>
+                    <option value="balance">Check Balance</option>
+                    <option value="deposit">Deposit</option>
+                    <option value="withdraw">Withdraw</option>
+                    <option value="history">Transaction History</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="amount" class="form-label">Amount (₹)</label>
+                <input type="number" step="0.01" class="form-control" id="amount" name="amount" placeholder="Enter amount">
+            </div>
+
+            <button type="submit" class="btn btn-custom w-100">Submit</button>
+        </form>
+
+        {% if message %}
+            <div class="alert alert-info text-center message">{{ message }}</div>
+        {% endif %}
+        <p class="text-center mt-3">Current Balance: <b>₹{{ "%.2f"|format(balance) }}</b></p>
+        {% if show_history %}
+            <h5 class="text-center">🧾 Transaction History</h5>
+            {% if history %}
+            <ul class="list-group">
+                {% for t in history %}
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>{{ t.type }}</span>
+                    <span>₹{{ "%.2f"|format(t.amount) }} → Balance ₹{{ "%.2f"|format(t.balance) }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-center">No transactions yet.</p>
+            {% endif %}
+        {% endif %}
+        <p class="text-center mt-3"><a href="/logout">Logout</a></p>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
