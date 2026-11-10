@@ -10,84 +10,136 @@
         body {
             background: linear-gradient(to right, #00c6ff, #0072ff);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            padding: 24px 12px;
         }
         .dashboard {
             background: #fff;
             padding: 30px;
             border-radius: 15px;
             width: 100%;
-            max-width: 500px;
+            max-width: 640px;
+            margin: 0 auto;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         }
         .dashboard h2 {
             color: #0072ff;
             font-weight: bold;
-            margin-bottom: 25px;
             text-align: center;
         }
-        .form-label {
-            font-weight: 500;
+        .balance-card {
+            background: linear-gradient(to right, #0072ff, #00c6ff);
+            color: #fff;
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+            margin: 18px 0;
         }
-        .message {
-            margin-top: 15px;
-            font-weight: 500;
+        .balance-card .amount { font-size: 1.8rem; font-weight: bold; }
+        .action-card {
+            border: 1px solid #e3e8ef;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
         }
-        .btn-custom {
-            background-color: #0072ff;
-            color: white;
-        }
-        .btn-custom:hover {
-            background-color: #004fbd;
-        }
+        .action-card h5 { color: #0072ff; font-weight: 600; }
+        .btn-custom { background-color: #0072ff; color: white; }
+        .btn-custom:hover { background-color: #004fbd; color: white; }
+        .limits { font-size: 0.85rem; color: #666; text-align: center; }
     </style>
 </head>
 <body>
 
     <div class="dashboard">
         <h2>Welcome {{ name }}!</h2>
-        <form method="POST" action="/dashboard">
-            <div class="mb-3">
-                <label for="action" class="form-label">Select Action</label>
-                <select class="form-select" id="action" name="action" required>
-                    <option value="" disabled selected>Choose an option</option>
-                    <option value="balance">Check Balance</option>
-                    <option value="deposit">Deposit</option>
-                    <option value="withdraw">Withdraw</option>
-                    <option value="history">Transaction History</option>
-                </select>
-            </div>
+        <p class="text-center text-muted mb-0">Account Number: <b>{{ account_number }}</b></p>
 
-            <div class="mb-3">
-                <label for="amount" class="form-label">Amount (₹)</label>
-                <input type="number" step="0.01" class="form-control" id="amount" name="amount" placeholder="Enter amount">
-            </div>
-
-            <button type="submit" class="btn btn-custom w-100">Submit</button>
-        </form>
+        <div class="balance-card">
+            <div>Current Balance</div>
+            <div class="amount">₹{{ "%.2f"|format(balance) }}</div>
+        </div>
 
         {% if message %}
-            <div class="alert alert-info text-center message">{{ message }}</div>
+            <div class="alert alert-info text-center">{{ message }}</div>
         {% endif %}
-        <p class="text-center mt-3">Current Balance: <b>₹{{ "%.2f"|format(balance) }}</b></p>
-        {% if show_history %}
-            <h5 class="text-center">🧾 Transaction History</h5>
-            {% if history %}
-            <ul class="list-group">
-                {% for t in history %}
-                <li class="list-group-item d-flex justify-content-between">
-                    <span>{{ t.type }}</span>
-                    <span>₹{{ "%.2f"|format(t.amount) }} → Balance ₹{{ "%.2f"|format(t.balance) }}</span>
-                </li>
-                {% endfor %}
-            </ul>
-            {% else %}
-            <p class="text-center">No transactions yet.</p>
-            {% endif %}
+
+        <div class="action-card">
+            <h5>💰 Deposit / 🏧 Withdraw</h5>
+            <form method="POST" action="/dashboard" class="row g-2">
+                <div class="col-md-5">
+                    <select class="form-select" name="action" required>
+                        <option value="deposit">Deposit</option>
+                        <option value="withdraw">Withdraw</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <input type="number" step="0.01" min="0" class="form-control" name="amount" placeholder="Amount (₹)" required>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-custom w-100">Submit</button>
+                </div>
+            </form>
+            <p class="limits mt-2 mb-0">Withdrawals: max ₹50,000 per transaction · ₹1,00,000 per day (withdrawals + transfers out)</p>
+        </div>
+
+        <div class="action-card">
+            <h5>🔁 Transfer Money</h5>
+            <form method="POST" action="/dashboard" class="row g-2">
+                <input type="hidden" name="action" value="transfer">
+                <div class="col-md-5">
+                    <input type="text" class="form-control" name="to_account" placeholder="Beneficiary account no." required>
+                </div>
+                <div class="col-md-4">
+                    <input type="number" step="0.01" min="0" class="form-control" name="amount" placeholder="Amount (₹)" required>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-custom w-100">Transfer</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="action-card">
+            <h5>🔑 Change PIN</h5>
+            <form method="POST" action="/dashboard" class="row g-2">
+                <input type="hidden" name="action" value="change_pin">
+                <div class="col-md-4">
+                    <input type="password" class="form-control" name="old_pin" maxlength="4" placeholder="Current PIN" required>
+                </div>
+                <div class="col-md-4">
+                    <input type="password" class="form-control" name="new_pin" maxlength="4" placeholder="New PIN" required>
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-custom w-100">Change PIN</button>
+                </div>
+            </form>
+        </div>
+
+        <h5 class="text-center mt-4">🧾 Mini Statement — Last 10 Transactions</h5>
+        {% if statement %}
+        <div class="table-responsive">
+            <table class="table table-sm table-striped align-middle">
+                <thead>
+                    <tr><th>Date &amp; Time</th><th>Type</th><th class="text-end">Amount (₹)</th><th class="text-end">Balance (₹)</th></tr>
+                </thead>
+                <tbody>
+                    {% for t in statement %}
+                    <tr>
+                        <td>{{ t.created_at }}</td>
+                        <td>{{ t.type }}{% if t.note %} <span class="text-muted">({{ t.note }})</span>{% endif %}</td>
+                        <td class="text-end">{{ "%.2f"|format(t.amount) }}</td>
+                        <td class="text-end">{{ "%.2f"|format(t.balance_after) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-center">No transactions yet.</p>
         {% endif %}
-        <p class="text-center mt-3"><a href="/logout">Logout</a></p>
+
+        <p class="text-center mt-3">
+            <a href="/history">📜 Full Transaction History</a> ·
+            <a href="/logout">Logout</a>
+        </p>
     </div>
 
     <!-- Bootstrap JS -->

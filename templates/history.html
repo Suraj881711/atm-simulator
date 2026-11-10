@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Transaction History — ATM</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(to right, #00c6ff, #0072ff);
+            min-height: 100vh;
+            padding: 24px 12px;
+        }
+        .box {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 720px;
+            margin: 0 auto;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        .box h2 { color: #0072ff; font-weight: bold; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>📜 Transaction History</h2>
+        <p class="text-center text-muted">
+            {{ name }} · Account <b>{{ account_number }}</b> ·
+            Current Balance: <b>₹{{ "%.2f"|format(balance) }}</b>
+        </p>
+
+        {% if history %}
+        <div class="table-responsive">
+            <table class="table table-striped align-middle">
+                <thead>
+                    <tr><th>#</th><th>Date &amp; Time</th><th>Type</th><th>Details</th><th class="text-end">Amount (₹)</th><th class="text-end">Balance After (₹)</th></tr>
+                </thead>
+                <tbody>
+                    {% for t in history %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ t.created_at }}</td>
+                        <td>{{ t.type }}</td>
+                        <td>{{ t.note }}</td>
+                        <td class="text-end">{{ "%.2f"|format(t.amount) }}</td>
+                        <td class="text-end">{{ "%.2f"|format(t.balance_after) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-center">No transactions yet.</p>
+        {% endif %}
+
+        <p class="text-center mt-3">
+            <a href="/dashboard">⬅ Back to Dashboard</a> ·
+            <a href="/logout">Logout</a>
+        </p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

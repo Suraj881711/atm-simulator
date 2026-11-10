@@ -9,10 +9,11 @@
     <style>
         body {
             background: linear-gradient(to right, #00b4db, #0083b0);
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 24px 0;
         }
         .login-container {
             background: #ffffff;
@@ -20,10 +21,10 @@
             border-radius: 15px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.2);
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
         }
         .login-container h2 {
-            margin-bottom: 25px;
+            margin-bottom: 8px;
             font-weight: bold;
             color: #0083b0;
         }
@@ -46,18 +47,28 @@
 </head>
 <body>
     <div class="login-container">
-        <h2 class="text-center">ATM Login</h2>
+        <h2 class="text-center">🏧 ATM Login</h2>
+        <p class="text-center text-muted">Log in with your account number and PIN</p>
         <form method="POST">
             <div class="mb-3">
-                <label for="pin" class="form-label">Enter 4-digit PIN</label>
-                <input type="password" class="form-control" id="pin" name="pin" maxlength="4" required>
+                <label for="account_number" class="form-label">Account Number</label>
+                <input type="text" class="form-control" id="account_number" name="account_number" inputmode="numeric" required>
+            </div>
+            <div class="mb-3">
+                <label for="pin" class="form-label">4-digit PIN</label>
+                <input type="password" class="form-control" id="pin" name="pin" maxlength="4" inputmode="numeric" required>
             </div>
             <button type="submit" class="btn btn-primary w-100">Login</button>
-            <p class="text-center mt-2" style="font-size:0.9rem;">💡 Demo PIN: 8817</p>
             {% if error %}
                 <div class="error-msg text-center">{{ error }}</div>
             {% endif %}
         </form>
+        <p class="text-center mt-3 mb-0">New user?
+            <a href="/create">Create an account</a>
+        </p>
+        <p class="text-center mt-2" style="font-size:0.85rem; color:#666;">
+            🔒 Accounts lock automatically after 5 wrong PIN attempts.
+        </p>
     </div>
 
     <!-- Bootstrap JS CDN (optional) -->
